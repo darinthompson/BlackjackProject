@@ -16,6 +16,17 @@ public class Dealer extends Person{
 		return deck.DealCards();
 	}
 	
+	public void showHandInitial() {
+		for (int i = 0; i < hand.getHand().size(); i++) {
+			if(i == 0) {
+				hand.getHand().get(i).printBlankCard();
+			} else {
+				hand.getHand().get(i).printCard();
+		
+			}
+		}
+	}
+	
 	public void showHand() {
 		for (Card card : hand.getHand()) {
 			card.printCard();

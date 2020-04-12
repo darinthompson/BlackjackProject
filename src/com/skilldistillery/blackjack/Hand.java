@@ -3,8 +3,9 @@ package com.skilldistillery.blackjack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Hand {
-	private List<Card> hand;
+public abstract class Hand {
+	protected List<Card> hand;
+	public abstract int getHandValue();
 	
 	public Hand() {
 		hand = new ArrayList<>();
@@ -14,16 +15,6 @@ public class Hand {
 		return hand;
 	}
 	
-	public int getHandValue() {
-		int score = 0;
-		for (Card card : hand) {
-			if(card.getRank().toString().equals("Ace") && score > 10) {
-				card.getRank().setValue(1);
-			}
-			score += card.GetValue();
-		}
-		return score;
-	}
 	
 	public void addCard(Card card) {
 		hand.add(card);

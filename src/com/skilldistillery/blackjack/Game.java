@@ -8,7 +8,6 @@ public class Game {
 	private static Dealer dealer;
 	private static Player player;
 	private static Scanner scan;
-	private static boolean continueGame;
 
 	public Game() {
 		scan = new Scanner(System.in);
@@ -20,107 +19,105 @@ public class Game {
 		g.Greeting();
 
 		while (true) {
-			
+			g.firstDeal();
+			g.playGame();
 
-			
-			g.playGame(player);
-
-			if (continueGame == true) {
-				g.playGame(dealer);
-				g.determineWinner();
-			}
-			System.out.println("================================");
-			System.out.println("|| Play again? 1. Yes | 2. No ||");
-			System.out.println("================================");
-			int userChoice = 0;
-			while(userChoice != 1 && userChoice != 2) {
-				userChoice = g.ValidateInt(">> ");
-			}
-			if(userChoice == 1) {
-				if(dealer.getDeckCount() < 10) {
-					dealer.getNewDeck();
+			System.out.println("\n===================================");
+			while (true) {
+				int userChoice = g.ValidateInt("Play again? 1. Yes | 2. No");
+				if (userChoice == 1) {
+					player.getHand().ClearHand();
+					dealer.getHand().ClearHand();
+					if (dealer.getDeckCount() < 15) {
+						dealer.getNewDeck();
+					}
+					break;
 				}
-				player.getHand().ClearHand();
-				dealer.getHand().ClearHand();
+				if (userChoice == 2) {
+					System.out.println("Thanks for playing!");
+					System.exit(0);
+				} else {
+					System.out.println("Not a valid response");
+				}
+			}
+		}
+	}
+
+	public void playGame() {
+		while (true) {
+			System.out.println("1. Hit | 2. Stay");
+			int userChoice = ValidateInt(">> ");
+
+			if (userChoice == 1) {
+				player.getHand().addCard(dealer.Deal());
+				displayTable();
+				if (player.getHand().isBust()) {
+					System.out.println("BUST! Dealer Wins");
+					return;
+				} else if (player.getHand().isBlackJack()) {
+					break;
+				}
+			} else if (userChoice == 2) {
+				break;
 			} else {
-				System.out.println("Thanks for playing. Come back soon!");
+				System.out.println("NOT A VALID CHOICE!");
 			}
 		}
 
-	}
+		while (dealer.getHand().getHandValue() < 17) {
+			dealer.getHand().addCard(dealer.Deal());
+		}
 
-	public void playGame(Person person) {
-		if (person instanceof Player) {
-			person.getHand().addCard(dealer.Deal());
-			takeTurn(person);
-			while (true) {
-				System.out.println("1. Hit | 2. Stay");
-				int userChoice = ValidateInt(">> ");
-				if (userChoice == 1) {
-					if (takeTurn(person) == false) {
-						break;
-					}
-				} else if (userChoice == 2) {
-					continueGame = true;
-					break;
-				} else {
-					System.out.println("That is not one of the options");
-				}
-			}
-		} else if (person instanceof Dealer) {
-			person.getHand().addCard(dealer.Deal());
-			takeTurn(person);
-			while (person.getHand().getHandValue() < 17) {
-				takeTurn(person);
-			}
+		System.out.println("==========================");
+		dealer.showHand();
+		System.out.println("Final Dealer Score: " + dealer.getHand().getHandValue());
+		if (dealer.getHand().getHandValue() > 21) {
+			System.out.println("BUST Player Wins!");
+		}
+
+		if (!player.getHand().isBust() && !dealer.getHand().isBust()) {
+			determineWinner();
 		}
 	}
 
 	public void determineWinner() {
-		if (player.getHand().getHandValue() > dealer.getHand().getHandValue()) {
-			System.out.println(player.getName() + "Wins!");
+		if (player.getHand().isBlackJack() && dealer.getHand().isBlackJack()) {
+			System.out.println("PUSH");
+		} else if (player.getHand().isBlackJack() && !dealer.getHand().isBlackJack()) {
+			System.out.println("BLACKJACK, YOU WIN!");
+		} else if (!player.getHand().isBlackJack() && dealer.getHand().isBlackJack()) {
+			System.out.println("Blackjack, dealer wins.");
+		} else if (player.getHand().getHandValue() > dealer.getHand().getHandValue()) {
+			System.out.println("YOU WIN!");
 		} else if (player.getHand().getHandValue() < dealer.getHand().getHandValue()) {
-			System.out.println("House wins.");
+			System.out.println("Dealer wins");
 		} else {
-			System.out.println("Push");
+			System.out.println("PUSH");
 		}
 	}
 
-	private boolean takeTurn(Person person) {
-		person.getHand().addCard(dealer.Deal());
-		person.showHand();
+	private void displayTable() {
+		System.out.println("Dealer Showing: ");
+		System.out.println("-------------------");
+		dealer.showHandInitial();
 		System.out.println();
+		System.out.println("Player Showing: ");
+		System.out.println("-------------------");
+		player.showHand();
+		System.out.println("\nScore: " + player.getHand().getHandValue());
+		System.out.println("**********");
+	}
+
+	private void firstDeal() {
+		player.getHand().addCard(dealer.Deal());
+		player.getHand().addCard(dealer.Deal());
+		dealer.getHand().addCard(dealer.Deal());
+		dealer.getHand().addCard(dealer.Deal());
 		System.out.println("==================");
-		System.out.println("Current Score: " + person.getHand().getHandValue());
 		System.out.println();
 
-		if (person.getHand().getHandValue() == 21) {
-			if (person instanceof Player) {
-				System.out.println("WINNER!");
-				continueGame = false;
-				return false;
-			}
-			if (person instanceof Dealer) {
-				System.out.println("House Wins.");
-				continueGame = false;
-				return false;
-			}
-		}
+		displayTable();
 
-		if (person.getHand().getHandValue() > 21) {
-			if (person instanceof Player) {
-				System.out.println("BUST");
-				continueGame = false;
-				return false;
-			}
-			if (person instanceof Dealer) {
-				System.out.println("Dealer Busts, you win");
-				continueGame = false;
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	public void Greeting() {

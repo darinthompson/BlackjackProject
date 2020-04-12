@@ -93,9 +93,13 @@ public class Card {
 		
 	}
 	
-//	public void printBlankCard() {
-//		sout
-//	}
+	public void printBlankCard() {
+		System.out.println(" ____");
+		System.out.println("| B  |");
+		System.out.println("|    |");
+		System.out.println("| J  |");
+		System.out.println("|____|");
+	}
 	 
 	 
 	 

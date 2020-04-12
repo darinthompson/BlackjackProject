@@ -5,13 +5,13 @@ import java.util.List;
 
 public abstract class Person {
 	protected String name;
-	protected Hand hand;
+	protected BlackJackHand hand;
 	protected double dollarAmount;
 	
 	Person(String _name, double _dollarAmount) {
 		name = _name;
 		dollarAmount = _dollarAmount;
-		hand = new Hand();
+		hand = new BlackJackHand();
 	}
 	
 	public void setName(String _name) {
@@ -30,7 +30,7 @@ public abstract class Person {
 		return dollarAmount;
 	}
 	
-	public Hand getHand() {
+	public BlackJackHand getHand() {
 		return hand;
 	}
 	
