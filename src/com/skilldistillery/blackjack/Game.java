@@ -8,6 +8,7 @@ public class Game {
 	private static Dealer dealer;
 	private static Player player;
 	private static Scanner scan;
+	private static int potOMoney;
 
 	public Game() {
 		scan = new Scanner(System.in);
@@ -17,12 +18,14 @@ public class Game {
 	public static void main(String[] args) {
 		Game g = new Game();
 		g.Greeting();
-
+		
 		while (true) {
+			g.placeBet();
 			g.firstDeal();
 			if(!g.IsBlackJack()) {
 				g.playGame();
 			}
+			g.displayCurrentPlayerWinnings();
 			g.PlayAgain();
 		}
 	}
@@ -31,6 +34,13 @@ public class Game {
 	
 	
 	
+	public void placeBet() {
+		int amount = 0;
+		while(amount <= 0 && amount <= player.getDollarAmount()) {
+			amount = ValidateInt("Place your bet. (min $1) >> ");
+		}
+		potOMoney = amount;
+	}
 	
 	public void playGame() {
 		while (true) {
@@ -69,6 +79,10 @@ public class Game {
 		}
 	}
 	
+	public void displayCurrentPlayerWinnings() {
+		System.out.println("Winnings: " + player.getDollarAmount());
+	}
+	
 	public void PlayAgain() {
 		System.out.println("\n===================================");
 		while (true) {
@@ -76,6 +90,7 @@ public class Game {
 			if (userChoice == 1) {
 				player.getHand().ClearHand();
 				dealer.getHand().ClearHand();
+				potOMoney = 0;
 				if (dealer.getDeckCount() < 15) {
 					dealer.getNewDeck();
 				}
@@ -93,8 +108,10 @@ public class Game {
 	public void determineWinner() {
 		if (player.getHand().getHandValue() > dealer.getHand().getHandValue()) {
 			System.out.println("YOU WIN!");
+			player.setDollarAmount(player.getDollarAmount() + potOMoney);
 		} else if (player.getHand().getHandValue() < dealer.getHand().getHandValue()) {
 			System.out.println("Dealer wins");
+			player.setDollarAmount(player.getDollarAmount() - potOMoney);
 		} else {
 			System.out.println("PUSH");
 		}
@@ -120,10 +137,12 @@ public class Game {
 		if (!player.getHand().isBlackJack() && dealer.getHand().isBlackJack()) {
 			dealer.showHand();
 			System.out.println("BlackJack Dealer Wins.");
+			player.setDollarAmount(player.getDollarAmount() - potOMoney);
 			return true;
 		}
 		if (player.getHand().isBlackJack() && !dealer.getHand().isBlackJack()) {
 			System.out.println("BLACKJACK PLAYER WINS!");
+			player.setDollarAmount(player.getDollarAmount() + potOMoney);
 			return true;
 		}
 		return false;

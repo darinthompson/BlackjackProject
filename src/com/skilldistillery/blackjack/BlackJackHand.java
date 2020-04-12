@@ -11,7 +11,7 @@ public class BlackJackHand extends Hand{
 		int score = 0;
 		for (Card card : hand) {
 			score += card.GetValue();
-			if(card.getRank().toString().equals("ACE") && score > 10 && score != 21) {
+			if(card.getRank().toString().equals("ACE") && score > 21) {
 				score -= 10;
 			}
 		}	
